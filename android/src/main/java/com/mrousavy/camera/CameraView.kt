@@ -420,6 +420,13 @@ class CameraView(context: Context, private val frameProcessorThread: ExecutorSer
         imageCaptureBuilder.setTargetResolution(format.photoSize)
         imageAnalysisBuilder.setTargetResolution(format.photoSize)
 
+
+        // change reffers to the:
+        // https://flipfit.atlassian.net/jira/software/c/projects/MOB/boards/115?assignee=63e4c87828cddcc70775d993&selectedIssue=MOB-5295
+        // we can do tests with only this quality selector,
+        videoRecorderBuilder.setQualitySelector(QualitySelector.from(Quality.SD))
+
+        /*
         // TODO: Ability to select resolution exactly depending on format? Just like on iOS...
         when (min(format.videoSize.height, format.videoSize.width)) {
           in 0..480 -> videoRecorderBuilder.setQualitySelector(QualitySelector.from(Quality.SD))
@@ -427,7 +434,7 @@ class CameraView(context: Context, private val frameProcessorThread: ExecutorSer
           in 720..1080 -> videoRecorderBuilder.setQualitySelector(QualitySelector.from(Quality.FHD, FallbackStrategy.lowerQualityThan(Quality.FHD)))
           in 1080..2160 -> videoRecorderBuilder.setQualitySelector(QualitySelector.from(Quality.UHD, FallbackStrategy.lowerQualityThan(Quality.UHD)))
           in 2160..4320 -> videoRecorderBuilder.setQualitySelector(QualitySelector.from(Quality.HIGHEST, FallbackStrategy.lowerQualityThan(Quality.HIGHEST)))
-        }
+        }*/
 
         fps?.let { fps ->
           if (format.frameRateRanges.any { it.contains(fps) }) {
