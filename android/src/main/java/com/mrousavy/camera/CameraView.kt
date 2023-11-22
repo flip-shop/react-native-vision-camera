@@ -11,7 +11,9 @@ import android.util.Range
 import android.view.*
 import android.view.View.OnTouchListener
 import android.widget.FrameLayout
+import androidx.annotation.OptIn
 import androidx.camera.camera2.interop.Camera2Interop
+import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.camera.core.*
 import androidx.camera.core.impl.*
 import androidx.camera.extensions.*
@@ -304,11 +306,6 @@ class CameraView(context: Context, private val frameProcessorThread: ExecutorSer
   override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
     updateLifecycleState()
-
-    coroutineScope.launch {
-      val cameraProvider = ProcessCameraProvider.getInstance(reactContext).await()
-      cameraProvider.unbindAll()
-    }
   }
 
   /**
@@ -351,7 +348,7 @@ class CameraView(context: Context, private val frameProcessorThread: ExecutorSer
   /**
    * Configures the camera capture session. This should only be called when the camera device changes.
    */
-  @SuppressLint("RestrictedApi")
+  @OptIn(ExperimentalCamera2Interop::class) @SuppressLint("RestrictedApi")
   private suspend fun configureSession() {
     try {
       val startTime = System.currentTimeMillis()
@@ -486,7 +483,7 @@ class CameraView(context: Context, private val frameProcessorThread: ExecutorSer
       if (enableFrameProcessor) {
         Log.i(TAG, "Adding ImageAnalysis use-case...")
         imageAnalysis = imageAnalysisBuilder.build().apply {
-          setAnalyzer(cameraExecutor, { image ->
+          setAnalyzer(cameraExecutor) { image ->
             val now = System.currentTimeMillis()
             val intervalMs = (1.0 / actualFrameProcessorFps) * 1000.0
             if (now - lastFrameProcessorCall > intervalMs) {
@@ -502,7 +499,7 @@ class CameraView(context: Context, private val frameProcessorThread: ExecutorSer
               // last evaluation was more than a second ago, evaluate again
               evaluateNewPerformanceSamples()
             }
-          })
+          }
         }
         useCases.add(imageAnalysis!!)
       }
