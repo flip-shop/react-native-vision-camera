@@ -11,6 +11,7 @@ import android.util.Range
 import android.view.*
 import android.view.View.OnTouchListener
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.camera.camera2.interop.Camera2Interop
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
@@ -367,7 +368,22 @@ class CameraView(context: Context, private val frameProcessorThread: ExecutorSer
       // Used to bind the lifecycle of cameras to the lifecycle owner
       val cameraProvider = ProcessCameraProvider.getInstance(reactContext).await()
 
-      var cameraSelector = CameraSelector.Builder().byID(cameraId!!).build()
+      var cameraSelector = CameraSelector.Builder().requireLensFacing(
+        if(cameraId == "0") {
+          CameraSelector.LENS_FACING_BACK
+        }else {
+          CameraSelector.LENS_FACING_FRONT
+        }
+      ).build()
+
+      val cameraInfo = cameraProvider.availableCameraInfos
+      var cameraIds = ""
+
+      cameraInfo.forEach {
+        cameraIds = "$cameraIds ${Camera2CameraInfo.from(it).cameraId}"
+      }
+
+      Toast.makeText(context, "List available cameras ids: $cameraIds", Toast.LENGTH_LONG).show()
 
       val tryEnableExtension: (suspend (extension: Int) -> Unit) = lambda@ { extension ->
         if (extensionsManager == null) {
