@@ -342,6 +342,7 @@ class CameraView(context: Context, private val frameProcessorThread: ExecutorSer
         }
       } catch (e: Throwable) {
         Log.e(TAG, "update() threw: ${e.message}")
+        Toast.makeText(context, "update ERROR ${e.message}", Toast.LENGTH_LONG).show()
         invokeOnError(e)
       }
     }
@@ -356,9 +357,11 @@ class CameraView(context: Context, private val frameProcessorThread: ExecutorSer
       val startTime = System.currentTimeMillis()
       Log.i(TAG, "Configuring session...")
       if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+        Toast.makeText(context, "cameraId = $cameraId throw CameraPermissionError()", Toast.LENGTH_LONG).show()
         throw CameraPermissionError()
       }
       if (cameraId == null) {
+        Toast.makeText(context, "cameraId == null, throw NoCameraDeviceError()", Toast.LENGTH_LONG).show()
         throw NoCameraDeviceError()
       }
       if (format != null)
@@ -384,7 +387,7 @@ class CameraView(context: Context, private val frameProcessorThread: ExecutorSer
         cameraIds = "$cameraIds ${Camera2CameraInfo.from(it).cameraId}"
       }
 
-      Toast.makeText(context, "List available cameras ids: $cameraIds", Toast.LENGTH_LONG).show()
+      Toast.makeText(context, "Require cameraId = $cameraId List available cameras ids: $cameraIds", Toast.LENGTH_LONG).show()
 
       val tryEnableExtension: (suspend (extension: Int) -> Unit) = lambda@ { extension ->
         if (extensionsManager == null) {
