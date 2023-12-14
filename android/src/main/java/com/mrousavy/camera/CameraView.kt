@@ -28,7 +28,6 @@ import androidx.lifecycle.*
 import com.facebook.jni.HybridData
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.bridge.*
-import com.facebook.react.uimanager.events.RCTEventEmitter
 import com.mrousavy.camera.frameprocessor.FrameProcessorPerformanceDataCollector
 import com.mrousavy.camera.frameprocessor.FrameProcessorRuntimeManager
 import com.mrousavy.camera.utils.*
@@ -324,6 +323,8 @@ class CameraView(context: Context, private val frameProcessorThread: ExecutorSer
         val shouldReconfigureTorch = shouldReconfigureSession || changedProps.contains("torch")
         val shouldUpdateOrientation = shouldReconfigureSession ||  changedProps.contains("orientation")
 
+        Toast.makeText(context, "Update, cameraId = $cameraId shouldReconfigureSession? $shouldReconfigureSession", Toast.LENGTH_LONG).show()
+
         if (changedProps.contains("isActive")) {
           updateLifecycleState()
         }
@@ -537,6 +538,8 @@ class CameraView(context: Context, private val frameProcessorThread: ExecutorSer
       invokeOnInitialized()
     } catch (exc: Throwable) {
       Log.e(TAG, "Failed to configure session: ${exc.message}")
+      Toast.makeText(context, "Failed to configure session: ${exc.message}", Toast.LENGTH_LONG).show()
+
       throw when (exc) {
         is CameraError -> exc
         is IllegalArgumentException -> {
