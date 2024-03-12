@@ -2,6 +2,7 @@ package com.mrousavy.camera
 
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
+import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.annotations.ReactProp
@@ -14,7 +15,8 @@ import com.mrousavy.camera.types.Torch
 import com.mrousavy.camera.types.VideoStabilizationMode
 
 @Suppress("unused")
-class CameraViewManager : ViewGroupManager<CameraView>() {
+@ReactModule(name = CameraViewManager.TAG)
+class CameraViewManager : VisionCameraManagerSpec<CameraView>() {
   public override fun createViewInstance(context: ThemedReactContext): CameraView = CameraView(context)
 
   override fun onAfterUpdateTransaction(view: CameraView) {
@@ -40,62 +42,57 @@ class CameraViewManager : ViewGroupManager<CameraView>() {
   }
 
   @ReactProp(name = "cameraId")
-  fun setCameraId(view: CameraView, cameraId: String) {
+  override fun setCameraId(view: CameraView, cameraId: String?) {
     view.cameraId = cameraId
   }
 
   @ReactProp(name = "photo")
-  fun setPhoto(view: CameraView, photo: Boolean) {
+  override fun setPhoto(view: CameraView, photo: Boolean) {
     view.photo = photo
   }
 
   @ReactProp(name = "video")
-  fun setVideo(view: CameraView, video: Boolean) {
+  override fun setVideo(view: CameraView, video: Boolean) {
     view.video = video
   }
 
   @ReactProp(name = "audio")
-  fun setAudio(view: CameraView, audio: Boolean) {
+  override fun setAudio(view: CameraView, audio: Boolean) {
     view.audio = audio
   }
 
   @ReactProp(name = "enableFrameProcessor")
-  fun setEnableFrameProcessor(view: CameraView, enableFrameProcessor: Boolean) {
+  override fun setEnableFrameProcessor(view: CameraView, enableFrameProcessor: Boolean) {
     view.enableFrameProcessor = enableFrameProcessor
   }
 
   @ReactProp(name = "pixelFormat")
-  fun setPixelFormat(view: CameraView, pixelFormat: String?) {
-    if (pixelFormat != null) {
-      val newPixelFormat = PixelFormat.fromUnionValue(pixelFormat)
-      view.pixelFormat = newPixelFormat
-    } else {
-      view.pixelFormat = PixelFormat.NATIVE
-    }
+  override fun setPixelFormat(view: CameraView, pixelFormat: String?) {
+    view.pixelFormat = PixelFormat.fromUnionValue(pixelFormat)
   }
 
   @ReactProp(name = "enableDepthData")
-  fun setEnableDepthData(view: CameraView, enableDepthData: Boolean) {
+  override fun setEnableDepthData(view: CameraView, enableDepthData: Boolean) {
     view.enableDepthData = enableDepthData
   }
 
   @ReactProp(name = "enableZoomGesture")
-  fun setEnableZoomGesture(view: CameraView, enableZoomGesture: Boolean) {
+  override fun setEnableZoomGesture(view: CameraView, enableZoomGesture: Boolean) {
     view.enableZoomGesture = enableZoomGesture
   }
 
   @ReactProp(name = "enableFpsGraph")
-  fun setEnableFpsGraph(view: CameraView, enableFpsGraph: Boolean) {
+  override fun setEnableFpsGraph(view: CameraView, enableFpsGraph: Boolean) {
     view.enableFpsGraph = enableFpsGraph
   }
 
   @ReactProp(name = "enableGpuBuffers")
-  fun setEnableGpuBuffers(view: CameraView, enableGpuBuffers: Boolean) {
+  override fun setEnableGpuBuffers(view: CameraView, enableGpuBuffers: Boolean) {
     view.enableGpuBuffers = enableGpuBuffers
   }
 
   @ReactProp(name = "videoStabilizationMode")
-  fun setVideoStabilizationMode(view: CameraView, videoStabilizationMode: String?) {
+  override fun setVideoStabilizationMode(view: CameraView, videoStabilizationMode: String?) {
     if (videoStabilizationMode != null) {
       val newMode = VideoStabilizationMode.fromUnionValue(videoStabilizationMode)
       view.videoStabilizationMode = newMode
@@ -105,12 +102,12 @@ class CameraViewManager : ViewGroupManager<CameraView>() {
   }
 
   @ReactProp(name = "enablePortraitEffectsMatteDelivery")
-  fun setEnablePortraitEffectsMatteDelivery(view: CameraView, enablePortraitEffectsMatteDelivery: Boolean) {
+  override fun setEnablePortraitEffectsMatteDelivery(view: CameraView, enablePortraitEffectsMatteDelivery: Boolean) {
     view.enablePortraitEffectsMatteDelivery = enablePortraitEffectsMatteDelivery
   }
 
   @ReactProp(name = "format")
-  fun setFormat(view: CameraView, format: ReadableMap?) {
+  override fun setFormat(view: CameraView, format: ReadableMap?) {
     if (format != null) {
       val newFormat = CameraDeviceFormat.fromJSValue(format)
       view.format = newFormat
@@ -120,45 +117,40 @@ class CameraViewManager : ViewGroupManager<CameraView>() {
   }
 
   @ReactProp(name = "resizeMode")
-  fun setResizeMode(view: CameraView, resizeMode: String?) {
-    if (resizeMode != null) {
-      val newMode = ResizeMode.fromUnionValue(resizeMode)
-      view.resizeMode = newMode
-    } else {
-      view.resizeMode = ResizeMode.COVER
-    }
+  override fun setResizeMode(view: CameraView, resizeMode: String?) {
+    view.resizeMode = ResizeMode.fromUnionValue(resizeMode)
   }
 
   // TODO: Change when TurboModules release.
   // We're treating -1 as "null" here, because when I make the fps parameter
   // of type "Int?" the react bridge throws an error.
-  @ReactProp(name = "fps", defaultInt = -1)
-  fun setFps(view: CameraView, fps: Int) {
+  @ReactProp(name = "fps")
+  override fun setFps(view: CameraView, fps: Int) {
     view.fps = if (fps > 0) fps else null
   }
 
   @ReactProp(name = "photoHdr")
-  fun setPhotoHdr(view: CameraView, photoHdr: Boolean) {
+  override fun setPhotoHdr(view: CameraView, photoHdr: Boolean) {
     view.photoHdr = photoHdr
   }
 
   @ReactProp(name = "videoHdr")
-  fun setVideoHdr(view: CameraView, videoHdr: Boolean) {
+  override fun setVideoHdr(view: CameraView, videoHdr: Boolean) {
     view.videoHdr = videoHdr
   }
 
   @ReactProp(name = "lowLightBoost")
-  fun setLowLightBoost(view: CameraView, lowLightBoost: Boolean) {
+  override fun setLowLightBoost(view: CameraView, lowLightBoost: Boolean) {
     view.lowLightBoost = lowLightBoost
   }
 
   @ReactProp(name = "isActive")
-  fun setIsActive(view: CameraView, isActive: Boolean) {
+  override fun setIsActive(view: CameraView, isActive: Boolean) {
     view.isActive = isActive
   }
 
   @ReactProp(name = "torch")
-  fun setTorch(view: CameraView, torch: String?) {
+  override fun setTorch(view: CameraView, torch: String?) {
     if (torch != null) {
       val newMode = Torch.fromUnionValue(torch)
       view.torch = newMode
@@ -168,17 +160,17 @@ class CameraViewManager : ViewGroupManager<CameraView>() {
   }
 
   @ReactProp(name = "zoom")
-  fun setZoom(view: CameraView, zoom: Double) {
+  override fun setZoom(view: CameraView, zoom: Double) {
     view.zoom = zoom.toFloat()
   }
 
   @ReactProp(name = "exposure")
-  fun setExposure(view: CameraView, exposure: Double) {
+  override fun setExposure(view: CameraView, exposure: Double) {
     view.exposure = exposure
   }
 
   @ReactProp(name = "orientation")
-  fun setOrientation(view: CameraView, orientation: String?) {
+  override fun setOrientation(view: CameraView, orientation: String?) {
     if (orientation != null) {
       val newMode = Orientation.fromUnionValue(orientation)
       view.orientation = newMode
@@ -188,7 +180,7 @@ class CameraViewManager : ViewGroupManager<CameraView>() {
   }
 
   @ReactProp(name = "codeScannerOptions")
-  fun setCodeScanner(view: CameraView, codeScannerOptions: ReadableMap?) {
+  override fun setCodeScannerOptions(view: CameraView, codeScannerOptions: ReadableMap?) {
     if (codeScannerOptions != null) {
       val newCodeScannerOptions = CodeScannerOptions.fromJSValue(codeScannerOptions)
       view.codeScannerOptions = newCodeScannerOptions

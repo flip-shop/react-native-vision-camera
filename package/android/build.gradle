@@ -13,10 +13,12 @@ buildscript {
     }
     mavenCentral()
     google()
+    jcenter()
   }
 
   dependencies {
     classpath "com.android.tools.build:gradle:7.4.2"
+    classpath "com.facebook.react:react-native-gradle-plugin"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
   }
 }
@@ -39,6 +41,15 @@ def isNewArchitectureEnabled() {
 if (isNewArchitectureEnabled()) {
   apply plugin: "com.facebook.react"
 }
+
+if (isNewArchitectureEnabled()) {
+  react {
+    jsRootDir = file("../src/")
+    libraryName = "CameraModule"
+    codegenJavaPackageName = "com.mrousavy.camera"
+  }
+}
+
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
 
@@ -129,6 +140,16 @@ android {
   sourceSets {
     main {
       manifest.srcFile androidManifestPath
+
+      if (isNewArchitectureEnabled()) {
+        java.srcDirs += [
+                "src/newarch",
+                // This is needed to build Kotlin project with NewArch enabled
+                "${project.buildDir}/generated/source/codegen/java"
+        ]
+      } else {
+        java.srcDirs += ["src/oldarch"]
+      }
     }
   }
 

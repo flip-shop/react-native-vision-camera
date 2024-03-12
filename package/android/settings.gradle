@@ -1,3 +1,4 @@
 rootProject.name = 'VisionCamera'
 
 include ':VisionCamera'
+includeBuild('../node_modules/@react-native/gradle-plugin')
