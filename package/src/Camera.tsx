@@ -12,6 +12,7 @@ import { VisionCameraProxy } from './FrameProcessorPlugins'
 import { CameraDevices } from './CameraDevices'
 import type { EmitterSubscription } from 'react-native'
 import type { Code, CodeScanner, CodeScannerFrame } from './CodeScanner'
+import { Commands, NativeProps } from './specs/CameraNativeComponent'
 
 //#region Types
 export type CameraPermissionStatus = 'granted' | 'not-determined' | 'denied' | 'restricted'
@@ -41,7 +42,7 @@ type NativeRecordVideoOptions = Omit<RecordVideoOptions, 'onRecordingError' | 'o
   videoBitRateOverride?: number
   videoBitRateMultiplier?: number
 }
-type RefType = React.Component<NativeCameraViewProps> & Readonly<NativeMethods>
+type RefType = React.Component<NativeProps, object, any> & Readonly<NativeMethods>
 interface CameraState {
   isRecordingWithFlash: boolean
 }
@@ -130,7 +131,16 @@ export class Camera extends React.PureComponent<CameraProps, CameraState> {
    */
   public async takePhoto(options?: TakePhotoOptions): Promise<PhotoFile> {
     try {
-      return await CameraModule.takePhoto(this.handle, options ?? {})
+      return await Commands.takePhoto(
+        this.ref.current as RefType,
+        options?.qualityPrioritization,
+        options?.flash,
+        options?.enableAutoRedEyeReduction,
+        options?.enableAutoStabilization,
+        options?.enableAutoDistortionCorrection,
+        options?.enableShutterSound,
+        options?.enablePrecapture,
+      )
     } catch (e) {
       throw tryParseNativeCameraError(e)
     }
@@ -189,20 +199,22 @@ export class Camera extends React.PureComponent<CameraProps, CameraState> {
       nativeOptions.videoBitRateMultiplier = this.getBitRateMultiplier(videoBitRate)
     }
 
-    const onRecordCallback = (video?: VideoFile, error?: CameraCaptureError): void => {
+    const onRecordCallback = (video?: VideoFile): void => {
       if (this.state.isRecordingWithFlash) {
         // disable torch again if it was enabled
         this.setState({
           isRecordingWithFlash: false,
         })
       }
-
-      if (error != null) return onRecordingError(error)
       if (video != null) return onRecordingFinished(video)
     }
     try {
       // TODO: Use TurboModules to make this awaitable.
-      CameraModule.startRecording(this.handle, nativeOptions, onRecordCallback)
+      // TODO: fix typing
+      //CameraModule.startRecording(this.handle, nativeOptions, onRecordCallback)
+      Commands.startRecording(this.ref.current as RefType, options.flash, options.fileType, options.videoCodec)
+        .then(onRecordCallback)
+        .catch(onRecordingError)
     } catch (e) {
       throw tryParseNativeCameraError(e)
     }
@@ -230,7 +242,8 @@ export class Camera extends React.PureComponent<CameraProps, CameraState> {
    */
   public async pauseRecording(): Promise<void> {
     try {
-      return await CameraModule.pauseRecording(this.handle)
+      // return await CameraModule.pauseRecording(this.handle)
+      return await Commands.pauseRecording(this.ref.current as RefType)
     } catch (e) {
       throw tryParseNativeCameraError(e)
     }
@@ -258,7 +271,8 @@ export class Camera extends React.PureComponent<CameraProps, CameraState> {
    */
   public async resumeRecording(): Promise<void> {
     try {
-      return await CameraModule.resumeRecording(this.handle)
+      //return await CameraModule.resumeRecording(this.handle)
+      return await Commands.resumeRecording(this.ref.current as RefType)
     } catch (e) {
       throw tryParseNativeCameraError(e)
     }
@@ -279,7 +293,8 @@ export class Camera extends React.PureComponent<CameraProps, CameraState> {
    */
   public async stopRecording(): Promise<void> {
     try {
-      return await CameraModule.stopRecording(this.handle)
+      //return await CameraModule.stopRecording(this.handle)
+      return await Commands.stopRecording(this.ref.current as RefType)
     } catch (e) {
       throw tryParseNativeCameraError(e)
     }
@@ -305,7 +320,8 @@ export class Camera extends React.PureComponent<CameraProps, CameraState> {
    */
   public async focus(point: Point): Promise<void> {
     try {
-      return await CameraModule.focus(this.handle, point)
+      //return await CameraModule.focus(this.handle, point)
+      return await Commands.focus(this.ref.current as RefType, point.x, point.y)
     } catch (e) {
       throw tryParseNativeCameraError(e)
     }
@@ -497,8 +513,11 @@ export class Camera extends React.PureComponent<CameraProps, CameraState> {
 //#endregion
 
 // requireNativeComponent automatically resolves 'CameraView' to 'CameraViewManager'
-const NativeCameraView = requireNativeComponent<NativeCameraViewProps>(
-  'CameraView',
-  // @ts-expect-error because the type declarations are kinda wrong, no?
-  Camera,
-)
+// todo use fabric flag
+const NativeCameraView = true
+  ? require('./specs/CameraNativeComponent').default
+  : requireNativeComponent<NativeCameraViewProps>(
+      'CameraView',
+      // @ts-expect-error because the type declarations are kinda wrong, no?
+      Camera,
+    )
