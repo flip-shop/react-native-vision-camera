@@ -4,19 +4,18 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
-import com.facebook.react.uimanager.ViewGroupManager
 import com.facebook.react.uimanager.annotations.ReactProp
-import com.mrousavy.camera.types.CameraDeviceFormat
-import com.mrousavy.camera.types.CodeScannerOptions
-import com.mrousavy.camera.types.Orientation
-import com.mrousavy.camera.types.PixelFormat
-import com.mrousavy.camera.types.ResizeMode
-import com.mrousavy.camera.types.Torch
-import com.mrousavy.camera.types.VideoStabilizationMode
+import com.mrousavy.camera.core.CameraQueues
+import com.mrousavy.camera.types.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Suppress("unused")
 @ReactModule(name = CameraViewManager.TAG)
 class CameraViewManager : VisionCameraManagerSpec<CameraView>() {
+
+  private val coroutineScope = CoroutineScope(CameraQueues.cameraQueue.coroutineDispatcher)
+
   public override fun createViewInstance(context: ThemedReactContext): CameraView = CameraView(context)
 
   override fun onAfterUpdateTransaction(view: CameraView) {
@@ -186,6 +185,61 @@ class CameraViewManager : VisionCameraManagerSpec<CameraView>() {
       view.codeScannerOptions = newCodeScannerOptions
     } else {
       view.codeScannerOptions = null
+    }
+  }
+
+  /**
+   * functions
+   */
+
+  override fun focus(view: CameraView?, x: Int, y: Int) {
+    coroutineScope.launch {
+      view?.cameraSession?.focus(x,y)
+    }
+  }
+
+  override fun stopRecording(view: CameraView?) {
+    coroutineScope.launch {
+      view?.stopRecording()
+    }
+  }
+
+  override fun resumeRecording(view: CameraView?) {
+    coroutineScope.launch {
+      view?.resumeRecording()
+    }
+  }
+
+  override fun pauseRecording(view: CameraView?) {
+    coroutineScope.launch {
+      view?.pauseRecording()
+    }
+  }
+
+  override fun startRecording(view: CameraView?, flash: String?, fileType: String?, videoCodec: String?) {
+    coroutineScope.launch {
+      view?.startRecording(
+        options = RecordVideoOptions(
+          fileTypeValue = fileType,
+          flashValue = flash,
+          videoCodecValue = videoCodec
+        )
+      ) { TODO("Not yet implemented") }
+    }
+  }
+
+  override fun takePhoto(
+    view: CameraView?,
+    qualityPrioritization: String?,
+    flash: String?,
+    enableAutoRedEyeReduction: Boolean,
+    enableAutoStabilization: Boolean,
+    enableAutoDistortionCorrection: Boolean,
+    enableShutterSound: Boolean,
+    enablePrecapture: Boolean
+  ) {
+    coroutineScope.launch {
+      view?.takePhoto()
     }
   }
 

@@ -1,5 +1,5 @@
 import type { HostComponent, ViewProps } from 'react-native'
-import type { DirectEventHandler, Double, Int32 } from 'react-native/Libraries/Types/CodegenTypes'
+import type { Double, Int32 } from 'react-native/Libraries/Types/CodegenTypes'
 import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands'
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent'
 import { Orientation } from '../Orientation'
@@ -104,7 +104,7 @@ export interface NativeCommands {
   pauseRecording(viewRef: React.ElementRef<HostComponent<NativeProps>>): Promise<void>
   resumeRecording(viewRef: React.ElementRef<HostComponent<NativeProps>>): Promise<void>
   stopRecording(viewRef: React.ElementRef<HostComponent<NativeProps>>): Promise<void>
-  focus(viewRef: React.ElementRef<HostComponent<NativeProps>>, x: Double, y: Double): Promise<void>
+  focus(viewRef: React.ElementRef<HostComponent<NativeProps>>, x: Int32, y: Int32): Promise<void>
 }
 
 export const Commands = codegenNativeCommands<NativeCommands>({
