@@ -23,29 +23,33 @@ import kotlinx.coroutines.*
 
 private const val TAG = "CameraView.takePhoto"
 
+
+data class TakePhotoOptions(
+  val qualityPrioritization: String? = "balanced",
+  val flash: String? = "off",
+  val enableAutoRedEyeReduction: Boolean = true,
+  val enableAutoStabilization: Boolean = true,
+  val enableAutoDistortionCorrection: Boolean = true,
+  val enableShutterSound: Boolean = true,
+  val enablePreCapture: Boolean = false
+)
+
 @SuppressLint("UnsafeOptInUsageError")
-suspend fun CameraView.takePhoto(optionsMap: ReadableMap): WritableMap {
-  val options = optionsMap.toHashMap()
+suspend fun CameraView.takePhoto(
+  options: TakePhotoOptions
+): WritableMap {
+
   Log.i(TAG, "Taking photo... Options: $options")
 
-  val qualityPrioritization = options["qualityPrioritization"] as? String ?: "balanced"
-  val flash = options["flash"] as? String ?: "off"
-  val enableAutoStabilization = options["enableAutoStabilization"] == true
-  val enableShutterSound = options["enableShutterSound"] as? Boolean ?: true
-  val enablePrecapture = options["enablePrecapture"] as? Boolean ?: false
-
-  // TODO: Implement Red Eye Reduction
-  options["enableAutoRedEyeReduction"]
-
-  val flashMode = Flash.fromUnionValue(flash)
-  val qualityPrioritizationMode = QualityPrioritization.fromUnionValue(qualityPrioritization)
+  val flashMode = Flash.fromUnionValue(options.flash)
+  val qualityPrioritizationMode = QualityPrioritization.fromUnionValue(options.qualityPrioritization)
 
   val photo = cameraSession.takePhoto(
     qualityPrioritizationMode,
     flashMode,
-    enableShutterSound,
-    enableAutoStabilization,
-    enablePrecapture,
+    options.enableShutterSound,
+    options.enableAutoStabilization,
+    options.enablePreCapture,
     orientation
   )
 

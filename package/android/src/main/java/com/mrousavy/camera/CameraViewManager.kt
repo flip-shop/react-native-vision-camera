@@ -224,7 +224,9 @@ class CameraViewManager : VisionCameraManagerSpec<CameraView>() {
           flashValue = flash,
           videoCodecValue = videoCodec
         )
-      ) { TODO("Not yet implemented") }
+      ) {
+
+      }
     }
   }
 
@@ -239,7 +241,17 @@ class CameraViewManager : VisionCameraManagerSpec<CameraView>() {
     enablePrecapture: Boolean
   ) {
     coroutineScope.launch {
-      view?.takePhoto()
+      view?.takePhoto(
+        options = TakePhotoOptions(
+          qualityPrioritization = qualityPrioritization,
+          flash = flash,
+          enableAutoRedEyeReduction = enableAutoRedEyeReduction,
+          enableAutoStabilization = enableAutoStabilization,
+          enableAutoDistortionCorrection = enableAutoDistortionCorrection,
+          enableShutterSound = enableShutterSound,
+          enablePreCapture = enablePrecapture
+        )
+      )
     }
   }
 
