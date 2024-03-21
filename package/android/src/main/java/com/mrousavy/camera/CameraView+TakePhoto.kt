@@ -32,7 +32,19 @@ data class TakePhotoOptions(
   val enableAutoDistortionCorrection: Boolean = true,
   val enableShutterSound: Boolean = true,
   val enablePreCapture: Boolean = false
-)
+) {
+
+  constructor(args: HashMap<String, Any>): this (
+    qualityPrioritization = args["qualityPrioritization"] as? String ?: "balanced",
+    flash = args["flash"] as? String ?: "off",
+    enableAutoRedEyeReduction = args["enableAutoRedEyeReduction"] as? Boolean ?: true,
+    enableAutoStabilization = args["enableAutoStabilization"] as? Boolean ?: true,
+    enableAutoDistortionCorrection = args["enableAutoDistortionCorrection"] as? Boolean ?: true,
+    enableShutterSound = args["enableShutterSound"] as? Boolean ?: true,
+    enablePreCapture = args["enablePrecapture"] as? Boolean ?: false
+  )
+
+}
 
 @SuppressLint("UnsafeOptInUsageError")
 suspend fun CameraView.takePhoto(

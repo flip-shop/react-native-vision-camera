@@ -1,5 +1,6 @@
 package com.mrousavy.camera
 
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
 import com.facebook.react.module.annotations.ReactModule
@@ -9,12 +10,16 @@ import com.mrousavy.camera.core.CameraQueues
 import com.mrousavy.camera.types.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 @Suppress("unused")
 @ReactModule(name = CameraViewManager.TAG)
 class CameraViewManager : VisionCameraManagerSpec<CameraView>() {
 
   private val coroutineScope = CoroutineScope(CameraQueues.cameraQueue.coroutineDispatcher)
+  private val cameraViewManagerImpl by lazy {
+    CameraViewManagerImpl()
+  }
 
   public override fun createViewInstance(context: ThemedReactContext): CameraView = CameraView(context)
 
@@ -253,6 +258,15 @@ class CameraViewManager : VisionCameraManagerSpec<CameraView>() {
         )
       )
     }
+  }
+
+  override fun receiveCommand(root: CameraView, commandId: String?, args: ReadableArray?) {
+    cameraViewManagerImpl.receiveCommand(WeakReference(root), commandId, args)
+    super.receiveCommand(root, commandId, args)
+  }
+
+  override fun getCommandsMap(): MutableMap<String, Int>? {
+    return cameraViewManagerImpl.getCommandsMap()
   }
 
   companion object {
