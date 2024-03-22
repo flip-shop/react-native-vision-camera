@@ -8,7 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
-class CameraViewManagerImpl {
+class CameraViewCommandsManager {
 
   private val coroutineScope = CoroutineScope(CameraQueues.cameraQueue.coroutineDispatcher)
 

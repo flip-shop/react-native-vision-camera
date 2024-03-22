@@ -17,9 +17,7 @@ import java.lang.ref.WeakReference
 class CameraViewManager : VisionCameraManagerSpec<CameraView>() {
 
   private val coroutineScope = CoroutineScope(CameraQueues.cameraQueue.coroutineDispatcher)
-  private val cameraViewManagerImpl by lazy {
-    CameraViewManagerImpl()
-  }
+  private val commandsManager by lazy { CameraViewCommandsManager() }
 
   public override fun createViewInstance(context: ThemedReactContext): CameraView = CameraView(context)
 
@@ -261,12 +259,12 @@ class CameraViewManager : VisionCameraManagerSpec<CameraView>() {
   }
 
   override fun receiveCommand(root: CameraView, commandId: String?, args: ReadableArray?) {
-    cameraViewManagerImpl.receiveCommand(WeakReference(root), commandId, args)
+    commandsManager.receiveCommand(WeakReference(root), commandId, args)
     super.receiveCommand(root, commandId, args)
   }
 
-  override fun getCommandsMap(): MutableMap<String, Int>? {
-    return cameraViewManagerImpl.getCommandsMap()
+  override fun getCommandsMap(): MutableMap<String, Int> {
+    return commandsManager.getCommandsMap()
   }
 
   companion object {
