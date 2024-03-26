@@ -88,7 +88,7 @@ class CameraViewModule(reactContext: ReactApplicationContext) : ReactContextBase
     coroutineScope.launch {
       val view = findCameraView(viewTag)
       withPromise(promise) {
-        view.takePhoto(options)
+        view.takePhoto(TakePhotoOptions(options.toHashMap()))
       }
     }
   }
