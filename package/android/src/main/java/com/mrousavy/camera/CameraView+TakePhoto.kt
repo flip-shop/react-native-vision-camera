@@ -9,6 +9,7 @@ import android.graphics.Matrix
 import android.hardware.camera2.*
 import android.util.Log
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableMap
 import com.mrousavy.camera.core.CameraSession
@@ -42,6 +43,16 @@ data class TakePhotoOptions(
     enableAutoDistortionCorrection = args["enableAutoDistortionCorrection"] as? Boolean ?: true,
     enableShutterSound = args["enableShutterSound"] as? Boolean ?: true,
     enablePreCapture = args["enablePrecapture"] as? Boolean ?: false
+  )
+
+  constructor(array: ReadableArray) : this(
+    qualityPrioritization = array.getString(0) as? String ?: "balanced",
+    flash = array.getString(1) as? String ?: "off",
+    enableAutoRedEyeReduction = array.getBoolean(2) as? Boolean ?: true,
+    enableAutoStabilization = array.getBoolean(3) as? Boolean ?: true,
+    enableAutoDistortionCorrection = array.getBoolean(4) as? Boolean ?: true,
+    enableShutterSound = array.getBoolean(5) as? Boolean ?: true,
+    enablePreCapture = array.getBoolean(6) as? Boolean ?: false
   )
 
 }

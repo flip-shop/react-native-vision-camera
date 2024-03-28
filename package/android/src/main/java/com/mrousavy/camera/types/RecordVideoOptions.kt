@@ -1,5 +1,6 @@
 package com.mrousavy.camera.types
 
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 
 class RecordVideoOptions() {
@@ -25,6 +26,18 @@ class RecordVideoOptions() {
     }
     if (map.hasKey("videoBitRateMultiplier")) {
       videoBitRateMultiplier = map.getDouble("videoBitRateMultiplier")
+    }
+  }
+
+  constructor(array: ReadableArray) : this() {
+    array.toArrayList().forEachIndexed { index, value ->
+      when (index) {
+        0 -> fileType = VideoFileType.fromUnionValue(value.toString())
+        1 -> flash = Flash.fromUnionValue(value.toString())
+        2 -> videoCodec = VideoCodec.fromUnionValue(value.toString())
+        3 -> videoBitRateOverride = value.toString().toDoubleOrNull()
+        4 -> videoBitRateMultiplier = value.toString().toDoubleOrNull()
+      }
     }
   }
 

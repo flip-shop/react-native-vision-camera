@@ -1,5 +1,6 @@
 package com.mrousavy.camera
 
+import android.util.Log.d
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
@@ -259,6 +260,7 @@ class CameraViewManager : VisionCameraManagerSpec<CameraView>() {
   }
 
   override fun receiveCommand(root: CameraView, commandId: String?, args: ReadableArray?) {
+    d(TAG,"receiveCommand commandId = $commandId args = $args")
     commandsManager.receiveCommand(WeakReference(root), commandId, args)
     super.receiveCommand(root, commandId, args)
   }

@@ -133,13 +133,13 @@ export class Camera extends React.PureComponent<CameraProps, CameraState> {
     try {
       return await Commands.takePhoto(
         this.ref.current as RefType,
-        options?.qualityPrioritization,
-        options?.flash,
-        options?.enableAutoRedEyeReduction,
-        options?.enableAutoStabilization,
-        options?.enableAutoDistortionCorrection,
-        options?.enableShutterSound,
-        options?.enablePrecapture,
+        options?.qualityPrioritization || 'balanced',
+        options?.flash || 'off',
+        options?.enableAutoRedEyeReduction || true,
+        options?.enableAutoStabilization || true,
+        options?.enableAutoDistortionCorrection || true,
+        options?.enableShutterSound || false,
+        options?.enablePrecapture || false,
       )
     } catch (e) {
       throw tryParseNativeCameraError(e)

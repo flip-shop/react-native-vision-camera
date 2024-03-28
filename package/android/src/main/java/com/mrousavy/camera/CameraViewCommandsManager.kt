@@ -43,13 +43,13 @@ class CameraViewCommandsManager {
       when(command) {
         takePhotoCommandName -> args?.let {
           viewRef.get()?.takePhoto(
-            options = TakePhotoOptions(it.getMap(0).toHashMap())
+            options = TakePhotoOptions(it)
           )
         }
 
         startRecordingCommandName -> args?.let {
           viewRef.get()?.startRecording(
-            options = RecordVideoOptions(it.getMap(0)),
+            options = RecordVideoOptions(it),
             onRecordCallback = {}
           )
         }
@@ -57,7 +57,7 @@ class CameraViewCommandsManager {
         pauseRecordingCommandName -> viewRef.get()?.pauseRecording()
         resumeRecordingCommandName -> viewRef.get()?.resumeRecording()
         stopRecordingCommandName -> viewRef.get()?.stopRecording()
-        focusCommandName -> args?.let { viewRef.get()?.focus(it.getMap(0)) }
+        focusCommandName -> args?.let { viewRef.get()?.focus(it) }
       }
     }
 
