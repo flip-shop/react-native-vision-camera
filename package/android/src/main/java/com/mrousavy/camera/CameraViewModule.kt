@@ -3,6 +3,7 @@ package com.mrousavy.camera
 import android.Manifest
 import android.content.pm.PackageManager
 import android.util.Log
+import android.util.Log.d
 import androidx.core.content.ContextCompat
 import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
@@ -85,6 +86,7 @@ class CameraViewModule(reactContext: ReactApplicationContext) : ReactContextBase
 
   @ReactMethod
   fun takePhoto(viewTag: Int, options: ReadableMap, promise: Promise) {
+    d("lolTag","takePhoto cameraViewModule")
     coroutineScope.launch {
       val view = findCameraView(viewTag)
       withPromise(promise) {

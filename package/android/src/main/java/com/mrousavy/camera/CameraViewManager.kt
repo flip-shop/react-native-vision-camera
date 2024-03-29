@@ -259,12 +259,6 @@ class CameraViewManager : VisionCameraManagerSpec<CameraView>() {
     }
   }
 
-  override fun receiveCommand(root: CameraView, commandId: String?, args: ReadableArray?) {
-    d(TAG,"receiveCommand commandId = $commandId args = $args")
-    commandsManager.receiveCommand(WeakReference(root), commandId, args)
-    super.receiveCommand(root, commandId, args)
-  }
-
   override fun getCommandsMap(): MutableMap<String, Int> {
     return commandsManager.getCommandsMap()
   }
