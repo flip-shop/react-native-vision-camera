@@ -25,21 +25,6 @@ import kotlinx.coroutines.*
 @ReactModule(name = CameraViewModule.TAG)
 @Suppress("unused")
 class CameraViewModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
-  companion object {
-    const val TAG = "CameraView"
-    var sharedRequestCode = 10
-
-    init {
-      try {
-        // Load the native part of VisionCamera.
-        // Includes the OpenGL VideoPipeline, as well as Frame Processor JSI bindings
-        System.loadLibrary("VisionCamera")
-      } catch (e: UnsatisfiedLinkError) {
-        Log.e(VisionCameraProxy.TAG, "Failed to load VisionCamera C++ library!", e)
-        throw e
-      }
-    }
-  }
 
   private val coroutineScope = CoroutineScope(CameraQueues.cameraQueue.coroutineDispatcher)
 
@@ -52,26 +37,10 @@ class CameraViewModule(reactContext: ReactApplicationContext) : ReactContextBase
 
   override fun getName(): String = TAG
 
-  private suspend fun findCameraView(viewId: Int): CameraView =
-    suspendCoroutine { continuation ->
-      UiThreadUtil.runOnUiThread {
-        Log.d(TAG, "Finding view $viewId...")
-        val view = if (reactApplicationContext != null) {
-          UIManagerHelper.getUIManager(
-            reactApplicationContext,
-            viewId
-          )?.resolveView(viewId) as CameraView?
-        } else {
-          null
-        }
-        Log.d(TAG, if (reactApplicationContext != null) "Found view $viewId!" else "Couldn't find view $viewId!")
-        if (view != null) {
-          continuation.resume(view)
-        } else {
-          continuation.resumeWithException(ViewNotFoundError(viewId))
-        }
-      }
-    }
+
+  /**
+   * ReactMethods
+   */
 
   @ReactMethod(isBlockingSynchronousMethod = true)
   fun installFrameProcessorBindings(): Boolean =
@@ -94,8 +63,6 @@ class CameraViewModule(reactContext: ReactApplicationContext) : ReactContextBase
       }
     }
   }
-
-
 
   // TODO: startRecording() cannot be awaited, because I can't have a Promise and a onRecordedCallback in the same function. Hopefully TurboModules allows that
   @ReactMethod
@@ -160,11 +127,6 @@ class CameraViewModule(reactContext: ReactApplicationContext) : ReactContextBase
     }
   }
 
-  private fun canRequestPermission(permission: String): Boolean {
-    val activity = currentActivity as? PermissionAwareActivity
-    return activity?.shouldShowRequestPermissionRationale(permission) ?: false
-  }
-
   @ReactMethod(isBlockingSynchronousMethod = true)
   fun getCameraPermissionStatus(): String {
     val status = ContextCompat.checkSelfPermission(reactApplicationContext, Manifest.permission.CAMERA)
@@ -222,6 +184,53 @@ class CameraViewModule(reactContext: ReactApplicationContext) : ReactContextBase
       activity.requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), currentRequestCode, listener)
     } else {
       promise.reject("NO_ACTIVITY", "No PermissionAwareActivity was found! Make sure the app has launched before calling this function.")
+    }
+  }
+
+
+  /**
+   * Private functions
+   */
+
+  private fun canRequestPermission(permission: String): Boolean {
+    val activity = currentActivity as? PermissionAwareActivity
+    return activity?.shouldShowRequestPermissionRationale(permission) ?: false
+  }
+
+  private suspend fun findCameraView(viewId: Int): CameraView =
+    suspendCoroutine { continuation ->
+      UiThreadUtil.runOnUiThread {
+        Log.d(TAG, "Finding view $viewId...")
+        val view = if (reactApplicationContext != null) {
+          UIManagerHelper.getUIManager(
+            reactApplicationContext,
+            viewId
+          )?.resolveView(viewId) as CameraView?
+        } else {
+          null
+        }
+        Log.d(TAG, if (reactApplicationContext != null) "Found view $viewId!" else "Couldn't find view $viewId!")
+        if (view != null) {
+          continuation.resume(view)
+        } else {
+          continuation.resumeWithException(ViewNotFoundError(viewId))
+        }
+      }
+    }
+
+  companion object {
+    const val TAG = "CameraView"
+    var sharedRequestCode = 10
+
+    init {
+      try {
+        // Load the native part of VisionCamera.
+        // Includes the OpenGL VideoPipeline, as well as Frame Processor JSI bindings
+        System.loadLibrary("VisionCamera")
+      } catch (e: UnsatisfiedLinkError) {
+        Log.e(VisionCameraProxy.TAG, "Failed to load VisionCamera C++ library!", e)
+        throw e
+      }
     }
   }
 }

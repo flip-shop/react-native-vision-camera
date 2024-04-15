@@ -4,8 +4,10 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.facebook.react.bridge.Callback
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
@@ -56,6 +58,47 @@ class CameraModule(reactContext: ReactApplicationContext?) : NativeCameraModuleS
 
   override fun requestMicrophonePermission(promise: Promise) {
     requestPermission(Manifest.permission.RECORD_AUDIO, promise)
+  }
+
+
+  /**
+   * These functions should be passed to the CameraViewModule
+   */
+
+  override fun takePhoto(options: ReadableMap?, promise: Promise?) {
+    TODO("Not yet implemented")
+  }
+
+  override fun takeSnapshot(options: ReadableMap?, promise: Promise?) {
+    TODO("Not yet implemented")
+  }
+
+  override fun startRecording(options: ReadableMap?, onRecordCallback: Callback?) {
+    TODO("Not yet implemented")
+  }
+
+  override fun pauseRecording(promise: Promise?) {
+    TODO("Not yet implemented")
+  }
+
+  override fun resumeRecording(promise: Promise?) {
+    TODO("Not yet implemented")
+  }
+
+  override fun stopRecording(promise: Promise?) {
+    TODO("Not yet implemented")
+  }
+
+  override fun focus(point: ReadableMap?, promise: Promise?) {
+    TODO("Not yet implemented")
+  }
+
+  override fun getAvailableVideoCodecs(fileType: String?, promise: Promise?) {
+    TODO("Not yet implemented")
+  }
+
+  override fun getAvailableCameraDevices(promise: Promise?) {
+    TODO("Not yet implemented")
   }
 
   /** **/

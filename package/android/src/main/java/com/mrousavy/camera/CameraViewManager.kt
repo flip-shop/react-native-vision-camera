@@ -1,24 +1,15 @@
 package com.mrousavy.camera
 
-import android.util.Log.d
-import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
-import com.mrousavy.camera.core.CameraQueues
 import com.mrousavy.camera.types.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
-import java.lang.ref.WeakReference
 
 @Suppress("unused")
 @ReactModule(name = CameraViewManager.TAG)
 class CameraViewManager : VisionCameraManagerSpec<CameraView>() {
-
-  private val coroutineScope = CoroutineScope(CameraQueues.cameraQueue.coroutineDispatcher)
-  private val commandsManager by lazy { CameraViewCommandsManager() }
 
   public override fun createViewInstance(context: ThemedReactContext): CameraView = CameraView(context)
 
@@ -190,77 +181,6 @@ class CameraViewManager : VisionCameraManagerSpec<CameraView>() {
     } else {
       view.codeScannerOptions = null
     }
-  }
-
-  /**
-   * functions
-   */
-
-  override fun focus(view: CameraView?, x: Int, y: Int) {
-    coroutineScope.launch {
-      view?.cameraSession?.focus(x,y)
-    }
-  }
-
-  override fun stopRecording(view: CameraView?) {
-    coroutineScope.launch {
-      view?.stopRecording()
-    }
-  }
-
-  override fun resumeRecording(view: CameraView?) {
-    coroutineScope.launch {
-      view?.resumeRecording()
-    }
-  }
-
-  override fun pauseRecording(view: CameraView?) {
-    coroutineScope.launch {
-      view?.pauseRecording()
-    }
-  }
-
-  override fun startRecording(view: CameraView?, flash: String?, fileType: String?, videoCodec: String?) {
-    coroutineScope.launch {
-      view?.startRecording(
-        options = RecordVideoOptions(
-          fileTypeValue = fileType,
-          flashValue = flash,
-          videoCodecValue = videoCodec
-        )
-      ) {
-
-      }
-    }
-  }
-
-  override fun takePhoto(
-    view: CameraView?,
-    qualityPrioritization: String?,
-    flash: String?,
-    enableAutoRedEyeReduction: Boolean,
-    enableAutoStabilization: Boolean,
-    enableAutoDistortionCorrection: Boolean,
-    enableShutterSound: Boolean,
-    enablePrecapture: Boolean
-  ) {
-    coroutineScope.launch {
-      view?.takePhoto(
-        options = TakePhotoOptions(
-          qualityPrioritization = qualityPrioritization,
-          flash = flash,
-          enableAutoRedEyeReduction = enableAutoRedEyeReduction,
-          enableAutoStabilization = enableAutoStabilization,
-          enableAutoDistortionCorrection = enableAutoDistortionCorrection,
-          enableShutterSound = enableShutterSound,
-          enablePreCapture = enablePrecapture
-        )
-      )
-    }
-  }
-
-  override fun getCommandsMap(): MutableMap<String, Int> {
-    return commandsManager.getCommandsMap()
   }
 
   companion object {

@@ -1,8 +1,6 @@
 import type { HostComponent, ViewProps } from 'react-native'
 import type { Double, Int32 } from 'react-native/Libraries/Types/CodegenTypes'
-import codegenNativeCommands from 'react-native/Libraries/Utilities/codegenNativeCommands'
 import codegenNativeComponent from 'react-native/Libraries/Utilities/codegenNativeComponent'
-import { Orientation } from '../Orientation'
 
 export type VisionCameraComponentType = HostComponent<NativeProps>
 
@@ -67,48 +65,5 @@ export interface NativeProps extends ViewProps {
   // >
   // onViewReady: DirectEventHandler<void>
 }
-
-export interface NativeCommands {
-  takePhoto: (
-    viewRef: React.ElementRef<HostComponent<NativeProps>>,
-    qualityPrioritization?: string,
-    flash?: string,
-    enableAutoRedEyeReduction?: boolean,
-    enableAutoStabilization?: boolean,
-    enableAutoDistortionCorrection?: boolean,
-    enableShutterSound?: boolean,
-    enablePrecapture?: boolean,
-  ) => Promise<
-    Readonly<{
-      path: string
-      width: Double
-      height: Double
-      isRawPhoto: boolean
-      orientation: Orientation
-      isMirrored: boolean
-    }>
-  >
-  startRecording: (
-    viewRef: React.ElementRef<HostComponent<NativeProps>>,
-    flash?: string,
-    fileType?: string,
-    videoCodec?: string,
-  ) => Promise<
-    Readonly<{
-      video?: Readonly<{
-        path: string
-        duration: Double
-      }>
-    }>
-  >
-  pauseRecording(viewRef: React.ElementRef<HostComponent<NativeProps>>): Promise<void>
-  resumeRecording(viewRef: React.ElementRef<HostComponent<NativeProps>>): Promise<void>
-  stopRecording(viewRef: React.ElementRef<HostComponent<NativeProps>>): Promise<void>
-  focus(viewRef: React.ElementRef<HostComponent<NativeProps>>, x: Int32, y: Int32): Promise<void>
-}
-
-export const Commands = codegenNativeCommands<NativeCommands>({
-  supportedCommands: ['takePhoto', 'startRecording', 'pauseRecording', 'resumeRecording', 'stopRecording', 'focus'],
-})
 
 export default codegenNativeComponent<NativeProps>('CameraView')
